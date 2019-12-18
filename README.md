@@ -1,2 +1,2 @@
 # meteo-webService
-(https://ricou12.github.io/meteo-webService/)[Service meteo]
+[Service meteo](https://ricou12.github.io/meteo-webService/)
