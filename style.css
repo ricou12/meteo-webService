@@ -1,0 +1,22 @@
+.localiser{
+    width: 100%;
+    min-width: 70px;
+}
+.info-meteo{
+    /* height: 400px; */
+}
+
+.info-meteo__temp {
+   
+}
+
+.info-meteo__img{
+  max-width: 150px;
+}
+.info-meteo__date{
+    margin-top:50px;
+    width: 100%;
+}
+body{
+     min-width: 250px;
+}

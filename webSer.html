@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com/
+
+Copyright (c) 2019 by anonymous (http://jsbin.com/lodicewezo/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org/
+-->
+<meta name="robots" content="noindex">
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+
+  <title>JS Bin</title>
+</head>
+
+<body>
+
+  <input type='text' id='link_id'>
+  <input type='button' id='link_str' value='Search' onClick='link()'>
+
+
+  <script id="jsbin-javascript">
+    /*
+  if(window.location.hash != "" && window.location.hash != "#"){
+    query = window.location.hash.substr(1);
+  }else{
+    query = "handsome geek";
+  }
+*/
+    function link() {
+      var link_s = document.getElementById('link').onclick = function () {
+        location.href = document.getElementById('link_id').value;
+
+      };
+      document.getElementById('link').innerHTML = link_s.link()
+    };
+
+    const count = 50;
+
+    let url = "https://api.unsplash.com/search/photos?query=" + query + '&per_page=' + count;
+    url += "&client_id=3f8a39699ebc36519cf9851a3ff8d69c9220edef8add5bfdb838a0869fab4be3";
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        // Tableau de résultats
+        const results = data.results
+
+        let newHtml = "";
+
+        for (let imageResult of results) {
+          newHtml += '<img onclick="openImage()" src="' + imageResult.urls.thumb + '" data-full-url="' + imageResult
+            .urls.full + '"/>'
+        }
+
+        document.body.innerHTML = newHtml;
+
+      })
+
+    function openImage(event) {
+      const $img = event.target;
+      const fullUrl = $img.getAttribute('data-full-url');
+      window.open(fullUrl);
+    }
+  </script>
+</body>
+
+</html>
