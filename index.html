@@ -12,55 +12,65 @@
 </head>
 
 <body>
-    <article class="container shadow mt-3">
+    <article class="container d-flex justify-content-center mt-3">
         <div class="row">
-            <div class="col-2 d-flex align-items-center">
-                <a href="#"><img class="localiser" src="./img/gps.png" alt="gps"></a>
-            </div>
-            <div class="col-10 text-center">
-                <h1 class="info-meteo__ville p-3"></h1>
-            </div>
-        </div>
-        <section class="row">
-            <aside class="col-12 info-meteo d-flex flex-column align-items-center">
-                <img class="info-meteo__img p-3" src="" alt="">
-                <div class="row info-meteo__temp">
-                    <div class="col-3 p-3">
-                        <div class="row">
-                            <div class="col-12 d-flex flex-row justify-content-center">
-                                Mini
-                            </div>
-                            <div class="col-12 d-flex flex-row justify-content-center">
-                                <h4 class="info-meteo__temp-Low"></h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 p-3">
-                        <div class="row">
-                            <div class="col-12 d-flex flex-row justify-content-center">
-                                Moyenne
-                            </div>
-                            <div class="col-12  d-flex flex-row justify-content-center">
-                                <h2 class="info-meteo__temp-medium"></h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-3 p-3">
-                        <div class="row">
-                            <div class="col-12  d-flex flex-row justify-content-center">
-                                Max
-                            </div>
-                            <div class="col-12  d-flex flex-row justify-content-center">
-                                <h4 class="info-meteo__temp-hight"></h4>
-                            </div>
-                        </div>
+            <div class="col-12 col-md-6 info-meteo">
+                <div class="row">
+                    <!-- <div class="col-2 d-flex align-items-center">
+                        <a href="#"><img class="localiser" src="./img/gps.png" alt="gps"></a>
+                    </div> -->
+                    <div class="col-12 text-center info-meteo__search">
+                        <a class="info-meteo__search__link" href="#"><h1 class="info-meteo__ville p-3"></h1></a>
+                        <input class="info-meteo__search__input hidden" type="text" placeholder="city search">
                     </div>
                 </div>
-                <h4 class="info-meteo__date"></h4>
-            </aside>
-        </section>
-        <hr>
-        <section class="row prevision"></section>
+                <section class="row">
+                    <aside class="col-12 d-flex flex-column align-items-center">
+                        <img class="info-meteo__img p-3" src="" alt="">
+                        <div class="row info-meteo__temp">
+                            <div class="col-3 p-3">
+                                <div class="row">
+                                    <div class="col-12 d-flex flex-row justify-content-center">
+                                        Mini
+                                    </div>
+                                    <div class="col-12 d-flex flex-row justify-content-center">
+                                        <h4 class="info-meteo__temp-Low"></h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 p-3">
+                                <div class="row">
+                                    <div class="col-12 d-flex flex-row justify-content-center">
+                                        Moyenne
+                                    </div>
+                                    <div class="col-12  d-flex flex-row justify-content-center">
+                                        <h2 class="info-meteo__temp-medium"></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3 p-3">
+                                <div class="row">
+                                    <div class="col-12  d-flex flex-row justify-content-center">
+                                        Max
+                                    </div>
+                                    <div class="col-12  d-flex flex-row justify-content-center">
+                                        <h4 class="info-meteo__temp-hight"></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="info-meteo__date"></h4>
+                    </aside>
+                </section>
+            </div>
+
+            <div class="col-12 col-md-6 otherDay d-flex align-items-center">
+                <section class="row prevision"></section>
+            </div>
+        </div>
+
+
+
 
 
     </article>

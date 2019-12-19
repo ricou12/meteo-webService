@@ -1,17 +1,54 @@
-var infoG = document.querySelector(".info-meteo");
-var image = infoG.children[1];
-var temp = infoG.children[2];
-var myDate = infoG.children[3];
+let city;
+// Si je clique sur le nom de la ville j'affiche l'input pour la recherche
+let ville = document.querySelector('.info-meteo__search__link');
+ville.addEventListener('click',function(){
+    showInput();
 
-var request = new XMLHttpRequest();
+    let myInput = document.querySelector(".info-meteo__search__input");
+    myInput.addEventListener('input', onInputChanged);
+    function onInputChanged(e){
+        // if(e.key == "enter"){
+            city = myInput.getAttribute('value');
+            if (showCity(city)){
+                 showCity(city);
+              // Remove the event listener
+            myInput.removeEventListener('input', onInputChanged);
+
+            // Remove the input
+            hideInput();  
+            }
+ 
+        }
+    // }   
+});
+
+function showInput(){
+    document.querySelector(".info-meteo__search__link").classList.add("hidden");
+    document.querySelector(".info-meteo__search__input").classList.remove("hidden");
+}
+function hideInput(){
+    document.querySelector(".info-meteo__search__link").classList.remove("hidden");
+    document.querySelector(".info-meteo__search__input").classList.add("hidden");
+}
+
+showCity("marseille");
+
+function showCity(city){
+  var request = new XMLHttpRequest();
 request.onreadystatechange = function () {
     if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
         var response = JSON.parse(this.responseText);
         update(response);
+        return true;
+    } else {
+        return false;
     }
 };
-request.open("GET", "https://www.prevision-meteo.ch/services/json/toulon");
-request.send();
+request.open("GET", "https://www.prevision-meteo.ch/services/json/" + city);
+request.send();  
+}
+
+
 
 function update(response) {
     document.querySelector(".info-meteo__ville").textContent = response.city_info.name;
@@ -20,10 +57,13 @@ function update(response) {
     document.querySelector('.info-meteo__temp-medium').textContent = response.current_condition.tmp + "°";
     document.querySelector('.info-meteo__temp-hight').textContent = response.fcst_day_0.tmax + "°";
     document.querySelector('.info-meteo__date').textContent = response.fcst_day_0.day_long + " " + response.fcst_day_0.date;
+    generate_prevision(response);
+}
 
-    let prevision = document.querySelector("prevision");
-    let properties = [response.fcst_day_0, response.fcst_day_1, response.fcst_day_2, response.fcst_day_3, response.fcst_day_4];
+function generate_prevision(response){
+let properties = [response.fcst_day_0, response.fcst_day_1, response.fcst_day_2, response.fcst_day_3, response.fcst_day_4];
     let html = "";
+    // let test3 = response["fcst_day_" + 0];
     for (let property of properties) {
         html +=  `<aside class="col-3">
             <h4>${property.day_short}</h4>
