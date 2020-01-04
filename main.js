@@ -4,10 +4,19 @@
 /* ----------------------------------------------------------------------------------------------------
                                             INTERROGER LE SERVEUR
 ---------------------------------------------------------------------------------------------------- */
+// Si on click sur le bouton alors on affiche les éléments de recherche.
+const activeSearch = document.querySelector(".search-img");
+activeSearch.addEventListener('click', () => toogleSearch());
+
+function toogleSearch(){
+    activeSearch.classList.toggle("hidden");
+    document.querySelector(".search_input").classList.toggle("hidden");
+    document.querySelector(".search_select").classList.toggle("hidden");
+}
 /* --------------------------------------------------------------------
                 RECUPERE LA LISTE DES VILLES
 -------------------------------------------------------------------- */
-const searching = document.querySelector('.search-input');
+const searching = document.getElementById("search-input");
 searching.addEventListener('input', () => getListeCitiesAsync());
 
 const getListeCitiesAsync = async function () {
@@ -46,12 +55,10 @@ const getListeCitiesAsync = async function () {
                     for (ville of villes) {
                         html += `<option value="${ville.url}">${ville.name}</option>`
                     }
-                    document.getElementById("seach-select").innerHTML = html;
+                    document.getElementById("search-select").innerHTML = html;
                 } else {
-                    document.getElementById("seach-select").innerHTML = `<option value="search">Affiner votre recherche ...</option>`;
+                    document.getElementById("search-select").innerHTML = `<option value="search">Affiner votre recherche ...</option>`;
                 }
-                console.log(jsonData);
-                console.log("Villes : " + villes[1].name);
             } else {
                 // ERREUR 404 LA PAGE N'EXISTE PAS
                 console.error('server response : ' + response.status);
@@ -64,12 +71,12 @@ const getListeCitiesAsync = async function () {
     }
 }
 
-// evt lorsque l'on selectionne une ville dans la liste de recherche.
-const myselect = document.getElementById("seach-select");
-myselect.addEventListener('click', () => {
+// Lance une requete au serveur lorsque l'on selectionne une ville dans la liste de recherche.
+const myselect = document.getElementById("search-select");
+myselect.addEventListener('change', () => {
+    toogleSearch();
     showCityFetch(myselect.value);
 });
-
 
 /*---------------------------------------------------------------------
         RECUPERE LES INFORMATIONS METEO POUR UNE VILLE DONNEES

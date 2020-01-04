@@ -16,13 +16,18 @@
         <div class="row">
             <div class="col-12 search">
                 <div class="row">
-                    <div class="col-12 col-md-6 p-2">
-                        <input id="search-input" placeholder="Rechercher une ville" class="search-input" type="text">
-                    </div>
-                    <div class="col-12 col-md-6 p-2">
-                        <select name="seach-select" id="seach-select">
+                    <div class="col-12 d-flex flex-wrap justify-content-center align-items-center">
+                        <div class="search_image p-2 d-flex">
+                           <img class="search-img" src="./img/btn.png" alt=""> 
+                        </div>
+                        <div class="search_input hidden p-2">
+                            <input id="search-input" placeholder="Rechercher une ville" class="search-input" type="text">
+                        </div>
+                        <div class="search_select hidden p-2">
+                            <select name="search-select" id="search-select">
                             <option value="">-- Liste de recherche --</option>
                         </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -32,8 +37,6 @@
                 <div class="row">
                     <div class="col-12 text-center info-meteo__search">
                         <h1 class="info-meteo__ville p-3"></h1>
-                        <!-- <a class="info-meteo__search__link" href="#"><h1 class="info-meteo__ville p-3"></h1></a>
-                        <input class="info-meteo__search__input hidden" type="text" placeholder="Rechercher une ville et valider"> -->
                     </div>
                 </div>
                 <section class="row">

@@ -1,22 +1,33 @@
 .search {
-    display:flex;
-    justify-content: center;
     padding:10px;
     border-radius: 7px;
-    text-align: center;
     background-color: black;
     border:1px solid gray;
 }
-.search-button {
-    border-radius: 3px;
-    color: lime;
-    background-color: black;
-}
+
 .search-input{
     color: lime;
     background-color:black;
     border-radius: 2px;
     border:1px solid gray;
+}
+
+#search-select{
+    color: white;
+    background-color:black;
+    border-radius: 2px;
+    border:1px solid gray;
+}
+
+.search-img{
+ width: 75px;
+ cursor: pointer;
+ transition:0.5s;
+}
+
+.search-img:hover{
+    transform: rotateZ(270deg);
+    filter: invert();
 }
 
 .info-meteo
@@ -40,6 +51,7 @@
 .hidden {
     display: none!important;
 }
+
 .info-meteo__search__input{
     width: 100%;
     background-color: rgb(0, 0, 0);
