@@ -172,8 +172,8 @@ function generate_prevision(response) {
             <aside class="col-3 text-right">
                 <img src="${property.icon}" alt="">
             </aside>
-            <aside class="col-3 text-right"><h4>${property.tmin} °C</h4></aside>
-            <aside class="col-3 text-right"><h4>${property.tmax} °C</h4></aside>`
+            <aside class="col-3 text-right" style="white-space: nowrap;"><h4>${property.tmin} °C</h4></aside>
+            <aside class="col-3 text-right" style="white-space: nowrap;"><h4>${property.tmax} °C</h4></aside>`
     }
     document.querySelector('.prevision').innerHTML = html
 }
