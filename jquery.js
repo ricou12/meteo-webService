@@ -5,12 +5,12 @@
                                             INTERROGER LE SERVEUR
 ---------------------------------------------------------------------------------------------------- */
 // Si on click sur le bouton alors on affiche les éléments de recherche.
-$(".search-img").on('click', () => {
-    $(".search-img").toggleClass("hidden");
+$(".search-img").on('click', () => toogleSearch());
+function toogleSearch(){
+     $(".search-img").toggleClass("hidden");
     $(".search_input").toggleClass("hidden");
     $(".search_select").toggleClass("hidden");
-});
-
+}
 /* --------------------------------------------------------------------
                 RECUPERE LA LISTE DES VILLES
 -------------------------------------------------------------------- */
@@ -70,10 +70,9 @@ $("#search-input").on('input', async() => {
 
 
 // Lance une requete au serveur lorsque l'on selectionne une ville dans la liste de recherche.
-const myselect = document.getElementById("search-select");
-myselect.addEventListener('change', () => {
+$("#search-select").on('change', () => {
     toogleSearch();
-    showCityFetch(myselect.value);
+    showCityFetch($("#search-select").val());
 });
 
 /*---------------------------------------------------------------------
