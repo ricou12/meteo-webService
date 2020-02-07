@@ -3,7 +3,7 @@
 
 ### Réalisation d'une maquette à l'aide l'outils en ligne FIGMA puis développement de l'application.
 
-![center](img/METEO.png)
+![center](img/figma.png)
 
 Version mobile et desktop
 
