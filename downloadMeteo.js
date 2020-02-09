@@ -1,10 +1,12 @@
-// let city;
-// let test = false;
+
 const errorInfo = document.querySelector('.message');
+
+const urlVille = "https://www.prevision-meteo.ch/services/json/";
+const urlListeVille = "https://cors-anywhere.herokuapp.com/https://www.prevision-meteo.ch/services/json/list-cities/fr";
 /* ----------------------------------------------------------------------------------------------------
                                             INTERROGER LE SERVEUR
 ---------------------------------------------------------------------------------------------------- */
-// Si on click sur le bouton alors on affiche les éléments de recherche.
+// récupère l'évenement click sur le bouton de recherche et bascule les éléments de recherche.
 $(".search-img").on('click', () => toogleSearch());
 
 function toogleSearch(){
@@ -12,77 +14,74 @@ function toogleSearch(){
     $(".search_input").toggleClass("hidden");
     $(".search_select").toggleClass("hidden");
 }
-/* --------------------------------------------------------------------
-                RECUPERE LA LISTE DES VILLES
--------------------------------------------------------------------- */ 
-$("#search-input").on('input', async() => {
-    try {
-        // Si au moins 1 caractere est saisie dans la barre de recherche alors on interroge le serveur.
-        if ( $("#search-input").val().length != 0 ) {
-            // Requete au serveur
-            const response = await fetch("https://cors-anywhere.herokuapp.com/https://www.prevision-meteo.ch/services/json/list-cities/fr");
-            // GESTION ERREUR : LE SERVEUR REPONDS AVEC OU SANS CODE ERREUR
-            if (response.ok) { // PAS D'ERREUR
-                const jsonData = await response.json(); // Attends la reponse du serveur
-                // Intialise un array pour stocker la liste des villes commençant par notre recherche.
-                let villes = [];
 
-                // Parcours les noms de ville du fichier json et les compare avec notre recherche.
-                for (const index in jsonData) {
-                    if (jsonData[index].country == "FRA") { // Si la ville est située en france
-                        const cityURL = jsonData[index].name.toLowerCase(); // Converti en minuscule le nom de ville extrait du json.
-                        let bool = cityURL.startsWith($("#search-input").val().toLowerCase()); // Renvoie true si le nom de ville commence par notre recherche.
-                        if (cityURL.startsWith($("#search-input").val().toLowerCase())) {
-                            // Initialise un objet pour stocker le nom et l'url des villes qui correspondent a notre recherche.
-                            let values = {};
-                            values.name = jsonData[index].name;
-                            values.url = jsonData[index].url;
-                            console.log(values);
-                            // Ajoute la ville à la liste des villes
-                            villes.push(values);
-                        }
+/* --------------------------------------------------------------------
+                EVENEMENTS CLICK RECUPERE LA LISTE DES VILLES
+-------------------------------------------------------------------- */ 
+$("#search-input").on('input', () => {
+    // Si au moins 1 caractere est saisie dans la barre de recherche alors on interroge le serveur.
+    if ($("#search-input").val().length != 0 ) {
+        // Requete au serveur
+        showCityFetch(urlListeVille).then(jsonData => {
+            // Intialise un array pour stocker la liste des villes commençant par notre recherche.
+            let villes = [];
+            // Parcours les noms de ville du fichier json et les compare avec notre recherche.
+            for (const index in jsonData) {
+                if (jsonData[index].country == "FRA") { // Si la ville est située en france
+                    const cityURL = jsonData[index].name.toLowerCase(); // Converti en minuscule le nom de ville extrait du json.
+                    let bool = cityURL.startsWith($("#search-input").val().toLowerCase()); // Renvoie true si le nom de ville commence par notre recherche.
+                    if (cityURL.startsWith($("#search-input").val().toLowerCase())) {
+                        // Initialise un objet pour stocker le nom et l'url des villes qui correspondent a notre recherche.
+                        let values = {};
+                        values.name = jsonData[index].name;
+                        values.url = jsonData[index].url;
+                        console.log(values);
+                        // Ajoute la ville à la liste des villes
+                        villes.push(values);
                     }
                 }
-                // console.log("Villes : " + villes);
-                // Ajout le tableau de la recherche dans un élément de liste, si inférieur à 500 (pour ne pas planter le navigateur).
-                let html;
-                if (villes.length < 500) {
-                    for (ville of villes) {
-                        html += `<option value="${ville.url}">${ville.name}</option>`
-                    }
-                    document.getElementById("search-select").innerHTML = html;
-                } else {
-                    document.getElementById("search-select").innerHTML = `<option value="search">Affiner votre recherche ...</option>`;
-                }
-            } else {
-                // ERREUR 404 LA PAGE N'EXISTE PAS
-                console.error('server response : ' + response.status);
             }
-        }
-    } catch (error) {
-        // ERREUR DE REQUETE LE SERVEUR NE REPONDS PAS
-        console.error(error);
+            // console.log("Villes : " + villes);
+            // Ajout le tableau de la recherche dans un élément de liste, si inférieur à 500 (pour ne pas planter le navigateur).
+            let html;
+            if (villes.length < 500) {
+                for (ville of villes) {
+                    html += `<option value="${ville.url}">${ville.name}</option>`
+                }
+                document.getElementById("search-select").innerHTML = html;
+            } else {
+                document.getElementById("search-select").innerHTML = `<option value="search">Affiner votre recherche ...</option>`;
+            }
+        })
+        .then((error) => {
+            // ERREUR DE REQUETE LE SERVEUR NE REPONDS PAS
+            console.error(error);
+        });
     }
 });
 
 
-// Lance une requete au serveur lorsque l'on selectionne une ville dans la liste de recherche.
+/*-------------------------------------------------------------------------------------------
+        ENVOIE UNE REQUETE AU SERVEUR APRES AVOIR S2LECTIONNE UNE VILLE DANS LA LISTE
+------------------------------------------------------------------------------------------ */
 $("#search-select").on('change', () => {
     toogleSearch();
-    showCityFetch($("#search-select").val()).then(returndata => {
-        if(returndata !=""){
-            update(returndata);
+    showCityFetch(urlVille + $("#search-select").val()).then(returndata => {
+        if(returndata.success){
+            update(returndata.data);
+        } else {
+            errorInfo.innerHTML =  messageBox("Info", "Une erreur de serveur est survenue !");
+           $('.toast').toast('show');
         }
     });
 });
 
 /*---------------------------------------------------------------------
-        RECUPERE LES INFORMATIONS METEO POUR UNE VILLE DONNEES
+        RECUPERE LES INFORMATIONS METEO POUR UNE VILLE DONNEE
 -------------------------------------------------------------------- */
 /*---- METHODE ASYNCHRONE Fetch ----*/
-const showCityFetch = city => {
-    
-    return fetch("https://www.prevision-meteo.ch/services/json/" + city)
+const showCityFetch = (url) => {
+    return fetch(url)
         .then(res => res.json())
         .then(returndata => {
             return {
@@ -96,19 +95,8 @@ const showCityFetch = city => {
         });        
 }
 
-
-showCityFetch("marseille").then(returndata => {
-    if(returndata.success){
-        update(returndata.data);
-    } else {
-        errorInfo.innerHTML =  messageBox("Info", "Une erreur de serveur est survenue !");
-       $('.toast').toast('show');
-    }
-});
-
-
 /* -----------------------------------------------------------------------------
-                        AFFICHAGE DES INFO METEO
+                        AFFICHAGE DES INFOS METEO
 ------------------------------------------------------------------------------ */
 function showInput() {
     $(".info-meteo__search__link").addClass("hidden");
@@ -136,7 +124,6 @@ function generate_prevision(response) {
     // METHODE N°4 : REDUCE RENVOIE UNE SEUL VALEUR A PARTIR DE TOUTE LES OCCURRENCES
     return [1, 2, 3, 4].reduce((accumlator,currentValue) => {
         const day =  response["fcst_day_" + currentValue];
-       
         return accumlator + `<aside class="col-3">
                     <h4>${day.day_short}</h4>
                 </aside>
@@ -170,3 +157,15 @@ const messageBox = (title, info) => {
         </div>
     </div>`
 }
+
+/*---------------------------------------------------------------------
+                    CHARGEMENT DE L'APPLICATION
+-------------------------------------------------------------------- */
+showCityFetch(urlVille + "marseille").then(returndata => {
+    if(returndata.success){
+        update(returndata.data);
+    } else {
+        errorInfo.innerHTML =  messageBox("Info", "Une erreur de serveur est survenue !");
+       $('.toast').toast('show');
+    }
+});
