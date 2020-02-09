@@ -1,4 +1,3 @@
-
 const errorInfo = document.querySelector('.message');
 
 const urlVille = "https://www.prevision-meteo.ch/services/json/";
@@ -9,69 +8,77 @@ const urlListeVille = "https://cors-anywhere.herokuapp.com/https://www.prevision
 // récupère l'évenement click sur le bouton de recherche et bascule les éléments de recherche.
 $(".search-img").on('click', () => toogleSearch());
 
-function toogleSearch(){
+function toogleSearch() {
     $(".search-img").toggleClass("hidden");
     $(".search_input").toggleClass("hidden");
     $(".search_select").toggleClass("hidden");
 }
 
+
 /* --------------------------------------------------------------------
                 EVENEMENTS CLICK RECUPERE LA LISTE DES VILLES
--------------------------------------------------------------------- */ 
+-------------------------------------------------------------------- */
 $("#search-input").on('input', () => {
     // Si au moins 1 caractere est saisie dans la barre de recherche alors on interroge le serveur.
-    if ($("#search-input").val().length != 0 ) {
+    if ($("#search-input").val().length != 0) {
         // Requete au serveur
         showCityFetch(urlListeVille).then(jsonData => {
-            // Intialise un array pour stocker la liste des villes commençant par notre recherche.
-            let villes = [];
-            // Parcours les noms de ville du fichier json et les compare avec notre recherche.
-            for (const index in jsonData) {
-                if (jsonData[index].country == "FRA") { // Si la ville est située en france
-                    const cityURL = jsonData[index].name.toLowerCase(); // Converti en minuscule le nom de ville extrait du json.
-                    let bool = cityURL.startsWith($("#search-input").val().toLowerCase()); // Renvoie true si le nom de ville commence par notre recherche.
-                    if (cityURL.startsWith($("#search-input").val().toLowerCase())) {
-                        // Initialise un objet pour stocker le nom et l'url des villes qui correspondent a notre recherche.
-                        let values = {};
-                        values.name = jsonData[index].name;
-                        values.url = jsonData[index].url;
-                        console.log(values);
-                        // Ajoute la ville à la liste des villes
-                        villes.push(values);
-                    }
-                }
-            }
-            // console.log("Villes : " + villes);
-            // Ajout le tableau de la recherche dans un élément de liste, si inférieur à 500 (pour ne pas planter le navigateur).
-            let html;
-            if (villes.length < 500) {
-                for (ville of villes) {
-                    html += `<option value="${ville.url}">${ville.name}</option>`
-                }
-                document.getElementById("search-select").innerHTML = html;
-            } else {
-                document.getElementById("search-select").innerHTML = `<option value="search">Affiner votre recherche ...</option>`;
-            }
-        })
-        .then((error) => {
-            // ERREUR DE REQUETE LE SERVEUR NE REPONDS PAS
-            console.error(error);
-        });
+                const villes = addCity(jsonData);
+                createCity(villes);
+            })
+            .catch((error) => {
+                // ERREUR DE REQUETE LE SERVEUR NE REPONDS PAS
+                console.log(error.message);
+            });
     }
 });
 
+const addCity = (jsonData) => {
+    // Intialise un array pour stocker la liste des villes commençant par notre recherche.
+    let villes = [];
+    // Parcours les noms de ville du fichier json et les compare avec notre recherche.
+    for (const index in jsonData.data) {
+        if (jsonData.data[index].country == "FRA") { // Si la ville est située en france
+            const cityURL = jsonData.data[index].name.toLowerCase(); // Converti en minuscule le nom de ville extrait du json.
+            let bool = cityURL.startsWith($("#search-input").val().toLowerCase()); // Renvoie true si le nom de ville commence par notre recherche.
+            if (cityURL.startsWith($("#search-input").val().toLowerCase())) {
+                // Initialise un objet pour stocker le nom et l'url des villes qui correspondent a notre recherche.
+                let values = {};
+                values.name = jsonData.data[index].name;
+                values.url = jsonData.data[index].url;
+                console.log(values);
+                // Ajoute la ville à la liste des villes
+                villes.push(values);
+            }
+        }
+    }
+    return villes;
+}
+
+const createCity = (villes) => {
+    // Ajout le tableau de la recherche dans un élément de liste, si inférieur à 500 (pour ne pas planter le navigateur).
+    let html;
+    if (villes.length < 500) {
+        for (ville of villes) {
+            html += `<option value="${ville.url}">${ville.name}</option>`
+        }
+        document.getElementById("search-select").innerHTML = html;
+    } else {
+        document.getElementById("search-select").innerHTML = `<option value="search">Affiner votre recherche ...</option>`;
+    }
+}
 
 /*-------------------------------------------------------------------------------------------
-        ENVOIE UNE REQUETE AU SERVEUR APRES AVOIR S2LECTIONNE UNE VILLE DANS LA LISTE
+        ENVOIE UNE REQUETE AU SERVEUR APRES AVOIR SELECTIONNE UNE VILLE DANS LA LISTE
 ------------------------------------------------------------------------------------------ */
 $("#search-select").on('change', () => {
     toogleSearch();
     showCityFetch(urlVille + $("#search-select").val()).then(returndata => {
-        if(returndata.success){
+        if (returndata.success) {
             update(returndata.data);
         } else {
-            errorInfo.innerHTML =  messageBox("Info", "Une erreur de serveur est survenue !");
-           $('.toast').toast('show');
+            errorInfo.innerHTML = messageBox("Info", "Une erreur de serveur est survenue !");
+            $('.toast').toast('show');
         }
     });
 });
@@ -85,14 +92,16 @@ const showCityFetch = (url) => {
         .then(res => res.json())
         .then(returndata => {
             return {
-                "success" : true, "data" : returndata
+                "success": true,
+                "data": returndata
             };
-         })
+        })
         .catch((error) => {
             return {
-                "success" : false, "data" : error.message
+                "success": false,
+                "data": error.message
             };
-        });        
+        });
 }
 
 /* -----------------------------------------------------------------------------
@@ -101,7 +110,7 @@ const showCityFetch = (url) => {
 function showInput() {
     $(".info-meteo__search__link").addClass("hidden");
     $(".info-meteo__search__input").removeClass("hidden");
-    $(".info-meteo__search__input").attr('value',"");
+    $(".info-meteo__search__input").attr('value', "");
 }
 
 function hideInput() {
@@ -112,7 +121,7 @@ function hideInput() {
 
 function update(response) {
     $('.info-meteo__ville').text(response.city_info.name);
-    $('.info-meteo__img').attr('src',response.current_condition.icon_big);
+    $('.info-meteo__img').attr('src', response.current_condition.icon_big);
     $('.info-meteo__temp-Low').text(response.fcst_day_0.tmin + "°C");
     $('.info-meteo__temp-medium').text(response.current_condition.tmp + "°C");
     $('.info-meteo__temp-hight').text(response.fcst_day_0.tmax + "°C");
@@ -122,8 +131,8 @@ function update(response) {
 
 function generate_prevision(response) {
     // METHODE N°4 : REDUCE RENVOIE UNE SEUL VALEUR A PARTIR DE TOUTE LES OCCURRENCES
-    return [1, 2, 3, 4].reduce((accumlator,currentValue) => {
-        const day =  response["fcst_day_" + currentValue];
+    return [1, 2, 3, 4].reduce((accumlator, currentValue) => {
+        const day = response["fcst_day_" + currentValue];
         return accumlator + `<aside class="col-3">
                     <h4>${day.day_short}</h4>
                 </aside>
@@ -135,8 +144,8 @@ function generate_prevision(response) {
                 </aside>
                 <aside class="col-3 text-right" style="white-space: nowrap;">
                     <h4>${day.tmax} °C</h4>
-                </aside>` 
-    },"");
+                </aside>`
+    }, "");
 }
 
 /* ----------------------------------------------------
@@ -162,10 +171,10 @@ const messageBox = (title, info) => {
                     CHARGEMENT DE L'APPLICATION
 -------------------------------------------------------------------- */
 showCityFetch(urlVille + "marseille").then(returndata => {
-    if(returndata.success){
+    if (returndata.success) {
         update(returndata.data);
     } else {
-        errorInfo.innerHTML =  messageBox("Info", "Une erreur de serveur est survenue !");
-       $('.toast').toast('show');
+        errorInfo.innerHTML = messageBox("Info", "Une erreur de serveur est survenue !");
+        $('.toast').toast('show');
     }
 });
