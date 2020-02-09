@@ -1,23 +1,20 @@
 // let city;
 // let test = false;
-
+const errorInfo = document.querySelector('.message');
 /* ----------------------------------------------------------------------------------------------------
                                             INTERROGER LE SERVEUR
 ---------------------------------------------------------------------------------------------------- */
 // Si on click sur le bouton alors on affiche les éléments de recherche.
 $(".search-img").on('click', () => toogleSearch());
+
 function toogleSearch(){
-     $(".search-img").toggleClass("hidden");
+    $(".search-img").toggleClass("hidden");
     $(".search_input").toggleClass("hidden");
     $(".search_select").toggleClass("hidden");
 }
 /* --------------------------------------------------------------------
                 RECUPERE LA LISTE DES VILLES
--------------------------------------------------------------------- */
-// $("#search-input").on('input', () => {
-//     console.log($("#search-input").val().length);
-// });  
- 
+-------------------------------------------------------------------- */ 
 $("#search-input").on('input', async() => {
     try {
         // Si au moins 1 caractere est saisie dans la barre de recherche alors on interroge le serveur.
@@ -72,47 +69,42 @@ $("#search-input").on('input', async() => {
 // Lance une requete au serveur lorsque l'on selectionne une ville dans la liste de recherche.
 $("#search-select").on('change', () => {
     toogleSearch();
-    showCityFetch($("#search-select").val());
+    showCityFetch($("#search-select").val()).then(returndata => {
+        if(returndata !=""){
+            update(returndata);
+        }
+    });
 });
 
 /*---------------------------------------------------------------------
         RECUPERE LES INFORMATIONS METEO POUR UNE VILLE DONNEES
 -------------------------------------------------------------------- */
-
-/*----METHODE N° 1 ASYNCHRONE XMLHttpRequest ----
-function showCity(city) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            update(response);
-        }
-    };
-    request.open("GET", "https://www.prevision-meteo.ch/services/json/" + city);
-    request.send();
+/*---- METHODE ASYNCHRONE Fetch ----*/
+const showCityFetch = city => {
+    
+    return fetch("https://www.prevision-meteo.ch/services/json/" + city)
+        .then(res => res.json())
+        .then(returndata => {
+            return {
+                "success" : true, "data" : returndata
+            };
+         })
+        .catch((error) => {
+            return {
+                "success" : false, "data" : error.message
+            };
+        });        
 }
-// showCity ("marseille");
-*/
 
-/*---- METHODE N° 2 ASYNCHRONE Fetch ----*/
-// const showCityFetch = async (city) => {
-// async function showCityFetch(city) {
-const showCityFetch = async(city) => {
-    try {
-        const response = await fetch("https://www.prevision-meteo.ch/services/json/" + city);
-        if (response.ok) {
-            const ville_json = await response.json();
-            update(ville_json);
-        } else {
-            // ERREUR 404 LA PAGE N'EXISTE PAS
-            console.error('server response : ' + response.status);
-        }
-    } catch (error) {
-        // ERREUR DE REQUETE LE SERVEUR NE REPONDS PAS
-        console.error(error);
+
+showCityFetch("marseille").then(returndata => {
+    if(returndata.success){
+        update(returndata.data);
+    } else {
+        errorInfo.innerHTML =  messageBox("Info", "Une erreur de serveur est survenue !");
+       $('.toast').toast('show');
     }
-}
-showCityFetch("marseille");
+});
 
 
 /* -----------------------------------------------------------------------------
@@ -141,58 +133,6 @@ function update(response) {
 }
 
 function generate_prevision(response) {
-    /*
-    METHODE N°1
-    let properties = [response.fcst_day_0, response.fcst_day_1, response.fcst_day_2, response.fcst_day_3, response.fcst_day_4];
-    let html = "";
-    for (let property of properties) {
-        html += `<aside class="col-3">
-            <h4>${property.day_short}</h4>
-            </aside>
-            <aside class="col-3 text-right">
-                <img src="${property.icon}" alt="">
-            </aside>
-            <aside class="col-3 text-right" style="white-space: nowrap;"><h4>${property.tmin} °C</h4></aside>
-            <aside class="col-3 text-right" style="white-space: nowrap;"><h4>${property.tmax} °C</h4></aside>`
-    }
-    return html
-    */
-   
-    /*
-    METHODE N°2 : MAP RENVOIE UN TABLEAU AUGMENTE A CHAQUE OCCURRENCE DU TABLEAU PASSE DS LA FONCTION MAP
-    return [1, 2, 3, 4].map(days => {
-        return `<aside class="col-3">
-                    <h4>${response["fcst_day_" + days].day_short}</h4>
-                </aside>
-                <aside class="col-3 text-right">
-                    <img src="${response["fcst_day_" + days].icon}" alt="">
-                </aside>
-                <aside class="col-3 text-right" style="white-space: nowrap;">
-                    <h4>${response["fcst_day_" + days].tmin} °C</h4>
-                </aside>
-                <aside class="col-3 text-right" style="white-space: nowrap;">
-                    <h4>${response["fcst_day_" + days].tmax} °C</h4>
-                </aside>` 
-    }).join('');  
-    */
-
-    /* METHODE N°3 : MAP
-    return [1, 2, 3, 4].map(days => response["fcst_day_" + days]).map(day => {
-        return `<aside class="col-3">
-                    <h4>${day.day_short}</h4>
-                </aside>
-                <aside class="col-3 text-right">
-                    <img src="${day.icon}" alt="">
-                </aside>
-                <aside class="col-3 text-right" style="white-space: nowrap;">
-                    <h4>${day.tmin} °C</h4>
-                </aside>
-                <aside class="col-3 text-right" style="white-space: nowrap;">
-                    <h4>${day.tmax} °C</h4>
-                </aside>` 
-    }).join('');
-    */
-
     // METHODE N°4 : REDUCE RENVOIE UNE SEUL VALEUR A PARTIR DE TOUTE LES OCCURRENCES
     return [1, 2, 3, 4].reduce((accumlator,currentValue) => {
         const day =  response["fcst_day_" + currentValue];
@@ -210,21 +150,23 @@ function generate_prevision(response) {
                     <h4>${day.tmax} °C</h4>
                 </aside>` 
     },"");
+}
 
-    /* METHODE N°5 : REDUCE RACCOURCI
-    return [1, 2, 3, 4].reduce((accumlator, currentValue) => accumlator + 
-               `<aside class="col-3">
-                    <h4>${response["fcst_day_" + currentValue].day_short}</h4>
-                </aside>
-                <aside class="col-3 text-right">
-                    <img src="${response["fcst_day_" + currentValue].icon}" alt="">
-                </aside>
-                <aside class="col-3 text-right" style="white-space: nowrap;">
-                    <h4>${response["fcst_day_" + currentValue].tmin} °C</h4>
-                </aside>
-                <aside class="col-3 text-right" style="white-space: nowrap;">
-                    <h4>${response["fcst_day_" + currentValue].tmax} °C</h4>
-                </aside>`
-   , "");
-   */
+/* ----------------------------------------------------
+                    MESSAGE UTILISATEUR
+----------------------------------------------------- */
+const messageBox = (title, info) => {
+    return `
+    <div class="toast" role="alert" aria-live="assertive" data-delay="5000" aria-atomic="true" style="">
+        <div class="toast-header bg-danger text-white">
+            <img src="..." class="rounded mr-2" alt="...">
+            <strong class="mr-auto">${title}</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body bg-dark text-white">
+            ${info}
+        </div>
+    </div>`
 }

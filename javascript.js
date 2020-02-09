@@ -83,17 +83,17 @@ myselect.addEventListener('change', () => {
 -------------------------------------------------------------------- */
 
 /*----METHODE N° 1 ASYNCHRONE XMLHttpRequest ----*/
-function showCity(city) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            update(response);
-        }
-    };
-    request.open("GET", "https://www.prevision-meteo.ch/services/json/" + city);
-    request.send();
-}
+// function showCity(city) {
+//     var request = new XMLHttpRequest();
+//     request.onreadystatechange = function () {
+//         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+//             var response = JSON.parse(this.responseText);
+//             update(response);
+//         }
+//     };
+//     request.open("GET", "https://www.prevision-meteo.ch/services/json/" + city);
+//     request.send();
+// }
 // showCity ("marseille");
 
 
